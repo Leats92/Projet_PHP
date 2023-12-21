@@ -1,0 +1,320 @@
+<?php
+include_once("config.php");
+include_once("database.php");
+
+if (empty($_GET['id'])) {
+    header('Location: index.php?error=Select at least one todo');
+}
+
+$sql = "SELECT * FROM todos WHERE `id`= " . $_GET['id'];
+$result = mysqli_query($db, $sql);
+if ($data = mysqli_fetch_assoc($result)) {
+   
+}
+
+error_reporting(E_ALL);
+ini_set('display_errors', '1');
+
+
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Todo App</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./css/main.css">
+</head>
+
+<style>
+    * {
+   margin: 0px;
+   box-sizing: border-box;
+}
+
+body {
+    background-image: url('IMG_9880.JPG');
+    background-size: cover;
+    background-position: center;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Roboto', sans-serif;
+}
+
+.todo-form,.todo-table {
+    background: rgba(255, 255, 255, 0.51);
+    border-radius: 10px;
+    padding: 1em;
+    position: relative;
+    width: clamp(450px, 80vw, 850px);
+}
+
+.todo-form input {
+    font-size: 25px;
+    line-height: 29px;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    width: 100%;
+    outline: none;
+    margin-top: 1em;
+}
+
+.todo-form button {
+    font-size: 25px;
+    line-height: 25px;
+    padding: 5px 15px;
+    border: none;
+    border-radius: 10px;
+    background: #5C5C5C;
+    color: #EAEAEA;
+
+    position: absolute;
+    right: 1em;
+    margin-top: 7px;
+    outline: none;
+    cursor: pointer;
+
+}
+
+
+
+/* Table */
+
+.todo-table h1 {
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 32px;
+    line-height: 37px;
+    color: #343434;
+}
+
+.todo-table small {
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 14px;
+    line-height: 16px;
+
+    color: #404040;
+}
+
+.todo-table table {
+    border-spacing: 0px;
+    margin-top: 1em;
+    width: 100%;
+    background-color: white;
+    border-radius: 10px;
+}
+
+.todo-table thead tr {
+    background: #3D39AA;
+    font-family: Inter;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 14px;
+    line-height: 18px;
+
+    color: #FFFFFF;
+    height: 40px;
+}
+
+.todo-table thead tr th:first-child {
+    border-radius: 10px 0px 0px 0px;
+}
+
+.todo-table thead tr th:nth-child(2) {
+    text-align: left;
+}
+
+.todo-table thead tr th:last-child {
+    border-radius: 0px 10px 0px 0px;
+}
+
+.todo-table tbody tr {
+    font-family: Inter;
+    font-style: normal;
+    font-size: 14px;
+    line-height: 18px;
+    height: 40px;
+}
+
+.todo-table tbody tr td:first-child {
+    text-align: center;
+    padding: 5px;
+}
+
+.todo-table tbody tr td:last-child {
+    text-align: center;
+    padding: 5px;
+}
+
+.todo-table tbody tr:nth-child(even) {
+    background: #F0F0F0;
+}
+
+.todo-table tbody tr:last-child td:first-child {
+    border-radius: 0px 0px 0px 10px;
+}
+
+.todo-table tbody tr:last-child td:last-child {
+    border-radius: 0px 0px 10px 0px;
+}
+
+.todo-table tbody tr.complete {
+    background-color: rgb(188, 255, 182);
+    text-decoration: line-through;
+}
+
+
+/* Modal Dialog */
+
+.hide-modal {
+    display: none;
+    visibility: hidden;
+}
+
+.confirm-modal {
+    position: fixed;
+    background-color: rgba(255, 255, 255, 0.803);
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-container {
+    background-color: rgb(255, 255, 255);
+    padding: 20px;
+    border-radius: 5px;
+    width: clamp(400px, 50vw ,500px);
+    box-shadow: 2px 2px 4px gray;
+}
+
+.modal-container h4 {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.modal-container h4 img {
+    width: 80px;
+    padding: 15px;
+}
+
+.modal-container h4 span {
+    font-size: 1.5em;
+}
+
+.btns {
+    display: flex;
+    justify-content: flex-end;
+    gap: 20px;
+    margin-top: 25px;
+}
+
+.btns button {
+    padding: 10px 15px;
+    border: none;
+    outline: none;
+    box-shadow: 2px 2px 2px gray;
+    cursor: pointer;
+}
+
+.btns button:nth-child(1) {
+    background-color: rgb(168, 16, 16);
+    color: white;
+    font-weight: bold;
+}
+
+.btns button:nth-child(2) {
+    background-color: rgb(53, 53, 53);
+    color: white;
+    font-weight: bold;
+}
+
+.btn  {
+    margin-top: .2em;
+    padding: .5em 1em;
+    
+    outline: none;
+    cursor: pointer;
+    text-decoration: none;
+    border-radius: 200px;
+    font-size: .8rem;
+    border: none;
+}
+
+.complete td:last-child {
+    text-decoration: none;
+}
+
+.btn-primary {
+    background-color: #252525;
+    color: rgb(255, 255, 255);
+}
+
+.btn-danger {
+    background-color: #a51010;
+    color: rgb(255, 255, 255);
+}
+
+.btn-success {
+    background-color: #008a3e;
+    color: rgb(255, 255, 255);
+}
+
+.btn-secondary {
+    background-color: #006da0;
+    color: rgb(255, 255, 255);
+}
+
+.btn-orange {
+    background-color: #a04000;
+    color: rgb(255, 255, 255);
+}
+
+.btn-purple {
+    background-color: #7b00ce;
+    color: rgb(255, 255, 255);
+}
+
+.btn-holder {
+    margin-top: 1em;
+}
+
+.form-elements input{
+    font-size: 25px;
+    line-height: 29px;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    width: 100%;
+    outline: none;
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+</style>
+<body>
+    <div class="container">
+        <form action="process.php" method = "POST">
+            <div class="todo-table">
+                <h1>Modifier une tâche</h1>
+                <div class="form-elements">
+                    <input type="text" name="title" required value = "<?php echo $data['title']; ?>" placeholder="Type your todo here...">
+                </div>
+                <input type="hidden" name="action" value="edited">
+                <input type="hidden" name="id" value="<?php echo $_GET['id']; ?>">
+                <button class="btn btn-purple"><i class="fa fa-save"></i> Enregister</button>
+                <a href="index.php" class="btn btn-primary"><i class="fa fa-arrow-left"></i> Retour</a>
+            </div>
+        </form>
+    </div>
+</html>
